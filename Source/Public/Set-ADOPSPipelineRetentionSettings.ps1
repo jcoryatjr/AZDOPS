@@ -18,15 +18,15 @@ function Set-ADOPSPipelineRetentionSettings {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/build/retention?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/build/retention?$script:apiVersion"
 
     $Body = ConvertRetentionSettingsToPatchBody -Values $Values | ConvertTo-Json
     Write-Debug $Body
-    
+
     $Response = InvokeADOPSRestMethod -Uri $Uri -Method Patch -Body $Body
     Write-Debug $Response
 
     $Settings = ConvertRetentionSettingsGetToPatch -Response $Response
-    
+
     Write-Output $Settings
 }

@@ -32,9 +32,9 @@ function Set-ADOPSRepository {
         if ([string]::IsNullOrEmpty($Organization)) {
             $Organization = GetADOPSDefaultOrganization
         }
-        
-        $URI = "https://dev.azure.com/${Organization}/${Project}/_apis/git/repositories/${RepositoryId}?api-version=7.1-preview.1"
-        
+
+        $URI = "https://dev.azure.com/${Organization}/${Project}/_apis/git/repositories/${RepositoryId}?$script:apiVersion"
+
         $InvokeSplat = @{
             URI = $Uri
             Method = 'Patch'
@@ -86,7 +86,7 @@ function Set-ADOPSRepository {
                 }
             }
         }
-        
+
         if ($PSBoundParameters.ContainsKey('IsDisabled') -and ($true -eq $IsDisabled)) {
             # Disabling a repo needs to be done in a separate call and after any other changes.
             $Body = [ordered]@{

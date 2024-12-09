@@ -10,11 +10,11 @@ function New-ADOPSPipeline {
         [string]$Project,
 
         [Parameter(Mandatory)]
-        [ValidateScript( { 
+        [ValidateScript( {
             $_ -like '*.yaml' -or
             $_ -like '*.yml'
         },
-        ErrorMessage = "Path must be to a yaml file in your repository like: folder/file.yaml or folder/file.yml")] 
+        ErrorMessage = "Path must be to a yaml file in your repository like: folder/file.yaml or folder/file.yml")]
         [string]$YamlPath,
 
         [Parameter(Mandatory)]
@@ -35,7 +35,7 @@ function New-ADOPSPipeline {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/pipelines?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/pipelines?$script:apiVersion"
 
     try {
         $RepositoryID = (Get-ADOPSRepository -Organization $Organization -Project $Project -Repository $Repository -ErrorAction Stop).id
@@ -65,7 +65,7 @@ function New-ADOPSPipeline {
     $InvokeSplat = @{
         Method       = 'Post'
         Uri          = $URI
-        Body         = $Body 
+        Body         = $Body
     }
 
     InvokeADOPSRestMethod @InvokeSplat

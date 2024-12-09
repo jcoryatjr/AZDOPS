@@ -51,18 +51,18 @@ Describe 'New-ADOPSMergePolicy' {
                 Type = 'switch'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command New-ADOPSMergePolicy | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
 
-    
+
     Context "Functionality" {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-                
+
                 Mock -CommandName InvokeADOPSRestMethod  -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
@@ -77,9 +77,9 @@ Describe 'New-ADOPSMergePolicy' {
             $r = New-ADOPSMergePolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main'
             Should -Invoke -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
         }
-        
+
         It 'Creates correct URI' {
-            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/policy/configurations?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/policy/configurations?$script:apiVersion'
             $actual = New-ADOPSMergePolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main'
             $actual.Uri | Should -Be $required
         }
@@ -119,7 +119,7 @@ Describe 'New-ADOPSMergePolicy' {
             $actual = New-ADOPSMergePolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main' -allowRebaseMerge
             $actual.Body | Should -Be $required
         }
-        
+
         It 'Verifying body, allowing all' {
             $required = '{"type":{"id":"fa4e907d-c16b-4a4c-9dfa-4916e5d171ab"},"isBlocking":true,"isEnabled":true,"settings":{"scope":[{"repositoryId":"1","refName":"refs/heads/main","matchKind":"exact"}],"allowNoFastForward":true,"allowSquash":true,"allowRebase":true,"allowRebaseMerge":true}}'
             $actual = New-ADOPSMergePolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main' -allowNoFastForward -allowSquash -allowRebase -allowRebaseMerge

@@ -11,7 +11,7 @@ Describe 'New-ADOPSEnvironment' {
     BeforeAll {
         InModuleScope -ModuleName ADOPS {
             Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-            
+
             mock -CommandName 'Write-Output' -ModuleName ADOPS -MockWith {
                 return $InvokeSplat
             }
@@ -76,7 +76,7 @@ Describe 'New-ADOPSEnvironment' {
                 Type = 'switch'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command New-ADOPSEnvironment | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -91,9 +91,9 @@ Describe 'New-ADOPSEnvironment' {
             $r = New-ADOPSEnvironment -Project 'DummyProj' -Name 'EnvName'
             Should -Invoke -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
         }
-        
+
         It 'Creates correct URI' {
-            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/distributedtask/environments?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/distributedtask/environments?$script:apiVersion'
             $actual = New-ADOPSEnvironment -Project 'DummyProj' -Name 'EnvName' -Description 'EnvDescription'
             $actual.Uri | Should -Be $required
         }
@@ -124,9 +124,9 @@ Describe 'New-ADOPSEnvironment' {
             $actual = New-ADOPSEnvironment -Project 'DummyProj' -Name 'EnvName' -Description 'Environment description' -SkipAdmin -Verbose 4>&1
             $actual[1] | Should -Be $required
         }
-        
+
         It 'Creates correct security URI' {
-            $required = 'https://dev.azure.com/DummyOrg/_apis/securityroles/scopes/distributedtask.environmentreferencerole/roleassignments/resources/1_2?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/_apis/securityroles/scopes/distributedtask.environmentreferencerole/roleassignments/resources/1_2?$script:apiVersion'
             $actual = New-ADOPSEnvironment -Project 'DummyProj' -Name 'EnvName' -Description 'EnvDescription'
             $actual.Uri | Should -Be $required
         }

@@ -6,7 +6,7 @@ function Import-ADOPSRepository {
 
         [Parameter(Mandatory, ParameterSetName = 'RepositoryId')]
         [string]$RepositoryId,
-        
+
         [Parameter(Mandatory, ParameterSetName = 'RepositoryName')]
         [string]$RepositoryName,
 
@@ -31,7 +31,7 @@ function Import-ADOPSRepository {
         Default {}
     }
     $InvokeSplat = @{
-        URI    = "https://dev.azure.com/$Organization/$Project/_apis/git/repositories/$RepoIdentifier/importRequests?api-version=7.1-preview.1"
+        URI    = "https://dev.azure.com/$Organization/$Project/_apis/git/repositories/$RepoIdentifier/importRequests?$script:apiVersion"
         Method = 'Post'
         Body   = "{""parameters"":{""gitSource"":{""url"":""$GitSource""}}}"
     }

@@ -17,7 +17,7 @@ function Set-ADOPSPipelineSettings {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/build/generalsettings?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/build/generalsettings?$script:apiVersion"
 
     $Body =  $Values | ConvertTo-Json -Compress
     $Settings = InvokeADOPSRestMethod -Uri $Uri -Method 'PATCH' -Body $Body

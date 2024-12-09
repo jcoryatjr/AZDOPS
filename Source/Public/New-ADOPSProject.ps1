@@ -9,24 +9,24 @@ function New-ADOPSProject {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]$Description,
-        
+
         [Parameter(Mandatory)]
         [ValidateSet('Private', 'Public')]
         [string]$Visibility,
-        
+
         [Parameter()]
         [ValidateSet('Git', 'Tfvc')]
         [string]$SourceControlType = 'Git',
-        
+
         # The process type for the project, such as Basic, Agile, Scrum or CMMI
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]$ProcessTypeName,
-        
+
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]$Organization,
-        
+
         [Parameter()]
         [switch]$Wait
     )
@@ -37,7 +37,7 @@ function New-ADOPSProject {
     }
 
     # Get organization process templates
-    $URI = "https://dev.azure.com/$Organization/_apis/process/processes?api-version=7.1-preview.1"
+    $URI = "https://dev.azure.com/$Organization/_apis/process/processes?$script:apiVersion"
 
     $InvokeSplat = @{
         Method       = 'Get'
@@ -75,7 +75,7 @@ function New-ADOPSProject {
         $Body.Add('description', $Description)
     }
     $Body = $Body | ConvertTo-Json -Compress
-    
+
     $InvokeSplat = @{
         Method       = 'Post'
         Uri          = $URI
@@ -90,7 +90,7 @@ function New-ADOPSProject {
             $projectCreated = (Invoke-ADOPSRestMethod -Uri $Out.url -Method Get).status
             Start-Sleep -Seconds 1
         }
-        $Out = Get-ADOPSProject -Project $Name 
+        $Out = Get-ADOPSProject -Project $Name
     }
 
     $Out

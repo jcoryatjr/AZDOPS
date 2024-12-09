@@ -13,7 +13,7 @@ function Get-ADOPSNode {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/elasticpools/$PoolId/nodes?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/elasticpools/$PoolId/nodes?$script:apiVersion"
 
     $Method = 'GET'
     $NodeInfo = InvokeADOPSRestMethod -Uri $Uri -Method $Method

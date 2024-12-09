@@ -15,7 +15,7 @@ function Get-ADOPSPipelineTask {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri =  "https://dev.azure.com/$Organization/_apis/distributedtask/tasks?api-version=7.1-preview.1"
+    $Uri =  "https://dev.azure.com/$Organization/_apis/distributedtask/tasks?$script:apiVersion"
 
     $result = InvokeADOPSRestMethod -Uri $Uri -Method Get
 

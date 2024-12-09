@@ -22,7 +22,7 @@ function Test-ADOPSYamlFile {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/pipelines/$PipelineId/runs?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/pipelines/$PipelineId/runs?$script:apiVersion"
 
     $FileData = Get-Content $File -Raw
 
@@ -32,17 +32,17 @@ function Test-ADOPSYamlFile {
         resources          = @{}
         yamlOverride       = $FileData
     } | ConvertTo-Json -Depth 10 -Compress
-    
+
     $InvokeSplat = @{
         Uri          = $URI
         Method       = 'Post'
         Body         = $Body
     }
-    
+
     try {
         $Result = InvokeADOPSRestMethod @InvokeSplat
         Write-Output "$file validation success."
-    } 
+    }
     catch [Microsoft.PowerShell.Commands.HttpResponseException] {
         if ($_.ErrorDetails.Message) {
             $r = $_.ErrorDetails.Message | ConvertFrom-Json

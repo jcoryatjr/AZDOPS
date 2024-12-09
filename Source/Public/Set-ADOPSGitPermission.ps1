@@ -4,28 +4,28 @@ function Set-ADOPSGitPermission {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]$Organization,
-        
+
         [Parameter(Mandatory)]
         [Alias('ProjectId')]
         [string]$Project,
-        
+
         [Parameter(Mandatory)]
         [Alias('RepositoryId')]
         [string]$Repository,
-        
+
         [Parameter(Mandatory)]
         [ValidatePattern('^[a-z]{3,5}\.[a-zA-Z0-9]{40,}$', ErrorMessage = 'Descriptor must be in the descriptor format')]
         [string]$Descriptor,
-        
+
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [AccessLevels[]]$Allow,
-        
+
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [AccessLevels[]]$Deny
     )
-    
+
     # Allow input of names instead of IDs
     if ($Project -notmatch '^[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}$') {
         $Project = Get-ADOPSProject -Name $Project | Select-Object -ExpandProperty id
@@ -57,12 +57,12 @@ function Set-ADOPSGitPermission {
         else {
             $denyRules = ([accesslevels]$Deny).value__
         }
-    
+
         # If user didn't specify org, get it from saved context
         if ([string]::IsNullOrEmpty($Organization)) {
             $Organization = GetADOPSDefaultOrganization
         }
-        
+
         $SubjectDescriptor = (InvokeADOPSRestMethod -Uri "https://vssps.dev.azure.com/$Organization/_apis/identities?subjectDescriptors=$Descriptor&queryMembership=None&api-version=7.1-preview.1" -Method Get).value.descriptor
 
         $Body = [ordered]@{
@@ -76,15 +76,15 @@ function Set-ADOPSGitPermission {
                 }
             )
         } | ConvertTo-Json -Compress -Depth 10
-        
-        $Uri = "https://dev.azure.com/$Organization/_apis/accesscontrolentries/2e9eb7ed-3c0a-47d4-87c1-0ffdd275fd87?api-version=7.1-preview.1"
-        
+
+        $Uri = "https://dev.azure.com/$Organization/_apis/accesscontrolentries/2e9eb7ed-3c0a-47d4-87c1-0ffdd275fd87?$script:apiVersion"
+
         $InvokeSplat = @{
-            Uri    = $Uri 
-            Method = 'Post' 
+            Uri    = $Uri
+            Method = 'Post'
             Body   = $Body
         }
-        
+
         InvokeADOPSRestMethod @InvokeSplat
     }
 }

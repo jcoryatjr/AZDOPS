@@ -20,7 +20,7 @@ function Get-ADOPSUser {
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'Default') {
-        $Uri = "https://vssps.dev.azure.com/$Organization/_apis/graph/users?api-version=7.1-preview.1"
+        $Uri = "https://vssps.dev.azure.com/$Organization/_apis/graph/users?$script:apiVersion"
         $Method = 'GET'
         if(-not [string]::IsNullOrEmpty($ContinuationToken)) {
             $Uri += "&continuationToken=$ContinuationToken"
@@ -34,7 +34,7 @@ function Get-ADOPSUser {
             $parameters = [hashtable]$PSBoundParameters
             $parameters.Add('ContinuationToken', $Response.Headers['X-MS-ContinuationToken']?[0])
             $Users += Get-ADOPSUser @parameters
-        }   
+        }
         Write-Output $Users
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'Name') {
@@ -47,7 +47,7 @@ function Get-ADOPSUser {
         Write-Output $Users
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'Descriptor') {
-        $Uri = "https://vssps.dev.azure.com/$Organization/_apis/graph/users/$Descriptor`?api-version=7.1-preview.1"
+        $Uri = "https://vssps.dev.azure.com/$Organization/_apis/graph/users/$Descriptor`?$script:apiVersion"
         $Method = 'GET'
         $User = (InvokeADOPSRestMethod -Uri $Uri -Method $Method)
         Write-Output $User

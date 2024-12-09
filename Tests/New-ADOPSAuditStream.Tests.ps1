@@ -46,23 +46,23 @@ Describe 'New-ADOPSAuditStream' {
                 Type      = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases {
             Get-Command New-ADOPSAuditStream | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
-    
+
     Context 'functionality' {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-    
+
                 Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
             }
         }
-        
+
         It 'Should not get organization from GetADOPSDefaultOrganization when organization parameter is used' {
             New-ADOPSAuditStream -Organization 'anotherorg' -WorkspaceId '11111111-1111-1111-1111-111111111111' -SharedKey '123456'
             Should -Invoke GetADOPSDefaultOrganization -ModuleName ADOPS -Times 0 -Exactly
@@ -92,7 +92,7 @@ Describe 'New-ADOPSAuditStream' {
 
         It 'Verifying Uri' {
             $c = New-ADOPSAuditStream -WorkspaceId '11111111-1111-1111-1111-111111111111' -SharedKey '123456' -Organization 'Organization'
-            $c.Uri | Should -Be 'https://auditservice.dev.azure.com/Organization/_apis/audit/streams?api-version=7.1-preview.1'
+            $c.Uri | Should -Be 'https://auditservice.dev.azure.com/Organization/_apis/audit/streams?$script:apiVersion'
         }
 
         It 'Method should be Post' {

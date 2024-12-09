@@ -41,7 +41,7 @@ Describe "Grant-ADOPSPipelinePermission" {
                 Type = 'SwitchParameter'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Grant-ADOPSPipelinePermission | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory
             (Get-Command Grant-ADOPSPipelinePermission | Select-Object -ExpandProperty parameters)."$($_.Name)".ParameterType.Name | Should -Be $_.Type
@@ -56,7 +56,7 @@ Describe "Grant-ADOPSPipelinePermission" {
     Context "Granting access to a pipeline" {
         BeforeAll {
             Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'myorg' }
-            
+
             Mock Get-ADOPSProject -ModuleName ADOPS {
                 @{
                     id = "de6a3035-0146-4ae2-81c1-68596d187cf4"
@@ -102,23 +102,23 @@ Describe "Grant-ADOPSPipelinePermission" {
         }
 
         It "Should invoke corret Uri when organization is not used" {
-            (Grant-ADOPSPipelinePermission -Project "myproject" -PipelineId 42 -ResourceType "variablegroup" -ResourceId 1).Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?api-version=7.1-preview.1"
+            (Grant-ADOPSPipelinePermission -Project "myproject" -PipelineId 42 -ResourceType "variablegroup" -ResourceId 1).Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?$script:apiVersion"
         }
 
         It "Should invoke corret Uri when organization is used" {
-            (Grant-ADOPSPipelinePermission -Organization "someorg" -Project "myproject" -PipelineId 42 -ResourceType "variablegroup" -ResourceId 1).Uri | Should -Be "https://dev.azure.com/someorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?api-version=7.1-preview.1"
-        }     
+            (Grant-ADOPSPipelinePermission -Organization "someorg" -Project "myproject" -PipelineId 42 -ResourceType "variablegroup" -ResourceId 1).Uri | Should -Be "https://dev.azure.com/someorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?$script:apiVersion"
+        }
 
         It "Should invoke with correct body" {
             $Request = (Grant-ADOPSPipelinePermission -Project "myproject" -PipelineId 42 -ResourceType "variablegroup" -ResourceId 1)
             $Request.Body | Should -Be '{"pipelines":[{"id":42,"authorized":true}]}'
-            $Request.Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?api-version=7.1-preview.1"
+            $Request.Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?$script:apiVersion"
         }
 
         It "Should invoke with correct body for all pipelines" {
             $Request = (Grant-ADOPSPipelinePermission -Project "myproject" -AllPipelines -ResourceType "variablegroup" -ResourceId 1)
             $Request.Body | Should -Be '{"allpipelines":{"authorized":true}}'
-            $Request.Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?api-version=7.1-preview.1"
+            $Request.Uri | Should -Be "https://dev.azure.com/myorg/myproject/_apis/pipelines/pipelinepermissions/variablegroup/1?$script:apiVersion"
         }
     }
 }

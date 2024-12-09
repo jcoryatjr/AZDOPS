@@ -41,17 +41,17 @@ Describe 'Set-ADOPSRepository' {
                 Type = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Set-ADOPSRepository | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
-    
+
     Context "Functionality" {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-                
+
                 Mock -CommandName InvokeADOPSRestMethod  -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
@@ -68,7 +68,7 @@ Describe 'Set-ADOPSRepository' {
         }
 
         It 'Creates correct URI' {
-            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/d5f24968-f2ab-4048-bd65-58711420f6fa?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/d5f24968-f2ab-4048-bd65-58711420f6fa?$script:apiVersion'
             $actual = Set-ADOPSRepository -NewName 'NewName' -Project 'DummyProj' -RepositoryId 'd5f24968-f2ab-4048-bd65-58711420f6fa'
             $actual.Uri | Should -Be $required
         }

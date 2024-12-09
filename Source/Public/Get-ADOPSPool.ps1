@@ -21,11 +21,11 @@ function Get-ADOPSPool {
     }
 
     switch ($PSCmdlet.ParameterSetName) {
-        'PoolId' { $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/pools/$PoolId`?api-version=7.1-preview.1" }
+        'PoolId' { $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/pools/$PoolId`?$script:apiVersion" }
         'PoolName' { $uri = "https://dev.azure.com/$Organization/_apis/distributedtask/pools?poolName=$PoolName`&api-version=7.1-preview.1" }
-        'All' { $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/pools?api-version=7.1-preview.1" }
+        'All' { $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/pools?$script:apiVersion" }
     }
-    
+
     $Method = 'GET'
     $PoolInfo = InvokeADOPSRestMethod -Uri $Uri -Method $Method
 

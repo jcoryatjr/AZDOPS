@@ -41,7 +41,7 @@ Describe 'New-ADOPSPipeline' {
                 Type = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command New-ADOPSPipeline | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -56,13 +56,13 @@ Describe 'New-ADOPSPipeline' {
             $Repository = 'DummyRepo'
 
             Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'myorg' }
-            
+
             Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {}
-            
+
             Mock -CommandName Get-ADOPSRepository -ModuleName ADOPS -MockWith {
                 throw
             } -ParameterFilter { $Repository -eq 'MissingRepo' }
-            
+
             Mock -CommandName Get-ADOPSRepository -ModuleName ADOPS -MockWith {
                 return @'
                 {
@@ -91,12 +91,12 @@ Describe 'New-ADOPSPipeline' {
             }
         }
 
-        
+
         It 'uses InvokeADOPSRestMethod one time' {
             New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository
             Should -Invoke 'InvokeADOPSRestMethod' -ModuleName 'ADOPS' -Exactly -Times 1
         }
-        
+
         It 'uses Get-ADOPSRepository one time' {
             New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository
             Should -Invoke 'Get-ADOPSRepository' -ModuleName 'ADOPS' -Exactly -Times 1
@@ -105,15 +105,15 @@ Describe 'New-ADOPSPipeline' {
         It 'should not throw with mandatory parameters' {
             { New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository} | Should -Not -Throw
         }
-        
+
         It 'should throw if Repository Name is invalid' {
             { New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository 'MissingRepo'} | Should -Throw
         }
-        
+
         It 'should throw if YamlPath dont contain *.yaml' {
             { New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath 'MissingYamlPath' -Repository $Repository} | Should -Throw
         }
-        
+
         It 'should not throw if YamlPath is *.yml' {
             {New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath '.path/to/mePipeline.yml' -Repository $Repository} | Should -Not -Throw
         }
@@ -121,7 +121,7 @@ Describe 'New-ADOPSPipeline' {
         It 'should not throw without optional parameters' {
             { New-ADOPSPipeline -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository} | Should -Not -Throw
         }
-        
+
         It 'Verify body' {
             Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 return $body
@@ -130,16 +130,15 @@ Describe 'New-ADOPSPipeline' {
             $r = New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository
             $r | Should -Be '{"name":"DummyPipe1","folder":"\\","configuration":{"type":"yaml","path":"DummyYamlPath/file.yaml","repository":{"id":"39956c9b-d818-4338-8d99-f5e6004bdb72","type":"azureReposGit"}}}'
         }
-                
+
         It 'Verify uri' {
             Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 return $uri
             } -ParameterFilter { $Method -eq 'Post' }
 
             $r = New-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -YamlPath $YamlPath -Repository $Repository
-            $r | Should -Be 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines?api-version=7.1-preview.1'
+            $r | Should -Be 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines?$script:apiVersion'
         }
     }
 
 }
- 

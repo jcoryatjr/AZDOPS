@@ -27,14 +27,14 @@ function New-ADOPSAuditStream {
         [ValidatePattern('^[A-Za-z0-9+\/]*={0,2}$', ErrorMessage = 'EventGridTopicAccessKey should be Base64 encoded')]
         [string]$EventGridTopicAccessKey
     )
-    
+
     # If user didn't specify org, get it from saved context
     if ([string]::IsNullOrEmpty($Organization)) {
         $Organization = GetADOPSDefaultOrganization
     }
 
     $Body = switch ($PSCmdlet.ParameterSetName) {
-        'AzureMonitorLogs' { 
+        'AzureMonitorLogs' {
             [ordered]@{
                 consumerType = 'AzureMonitorLogs'
                 consumerInputs = [Ordered]@{
@@ -43,7 +43,7 @@ function New-ADOPSAuditStream {
                 }
             } | ConvertTo-Json -Compress
          }
-        'Splunk' { 
+        'Splunk' {
             [ordered]@{
                 consumerType = 'Splunk'
                 consumerInputs = [Ordered]@{
@@ -52,7 +52,7 @@ function New-ADOPSAuditStream {
                 }
             } | ConvertTo-Json -Compress
          }
-        'AzureEventGrid' { 
+        'AzureEventGrid' {
             [ordered]@{
                 consumerType = 'AzureEventGrid'
                 consumerInputs = [ordered]@{
@@ -63,7 +63,7 @@ function New-ADOPSAuditStream {
          }
     }
     $InvokeSplat = @{
-        Uri = "https://auditservice.dev.azure.com/$Organization/_apis/audit/streams?api-version=7.1-preview.1"
+        Uri = "https://auditservice.dev.azure.com/$Organization/_apis/audit/streams?$script:apiVersion"
         Method = 'Post'
         Body = $Body
     }

@@ -40,11 +40,11 @@ Describe 'Import-ADOPSRepository' {
                 Type = 'switch'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Import-ADOPSRepository | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
-        
+
         It 'GitSource parameter should be in all parametersets: <_>' -TestCases $r.ParameterSets.Name {
             $r.Parameters['GitSource'].ParameterSets.Keys | Should -Contain $_
         }
@@ -69,7 +69,7 @@ Describe 'Import-ADOPSRepository' {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-                
+
                 Mock -CommandName InvokeADOPSRestMethod  -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
@@ -84,29 +84,29 @@ Describe 'Import-ADOPSRepository' {
             $r = Import-ADOPSRepository -GitSource 'GitSource' -RepositoryName 'RepoName' -Project 'DummyProj'
             Should -Invoke -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
         }
-        
+
         It 'Invoke should be correct, Verifying method "Post"' {
             $r = Import-ADOPSRepository -GitSource 'GitSource' -RepositoryName 'RepoName' -Project 'DummyProj'
             $r.Method | Should -Be 'Post'
         }
         It 'Invoke should be correct, Verifying URI using RepositoryName' {
             $r = Import-ADOPSRepository -Organization 'Organization' -GitSource 'GitSource' -RepositoryName 'RepoName' -Project 'DummyProj'
-            $r.URI | Should -Be 'https://dev.azure.com/Organization/DummyProj/_apis/git/repositories/RepoName/importRequests?api-version=7.1-preview.1'
+            $r.URI | Should -Be 'https://dev.azure.com/Organization/DummyProj/_apis/git/repositories/RepoName/importRequests?$script:apiVersion'
         }
         It 'Invoke should be correct, Verifying URI using RepositoryId' {
             $r = Import-ADOPSRepository -Organization 'Organization' -GitSource 'GitSource' -RepositoryId 'RepoId' -Project 'DummyProj'
-            $r.URI | Should -Be 'https://dev.azure.com/Organization/DummyProj/_apis/git/repositories/RepoId/importRequests?api-version=7.1-preview.1'
+            $r.URI | Should -Be 'https://dev.azure.com/Organization/DummyProj/_apis/git/repositories/RepoId/importRequests?$script:apiVersion'
         }
         It 'Invoke should be correct, Verifying URI without Organization' {
             $r = Import-ADOPSRepository -GitSource 'GitSource' -RepositoryId 'RepoId' -Project 'DummyProj'
-            $r.URI | Should -Be 'https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/RepoId/importRequests?api-version=7.1-preview.1'
+            $r.URI | Should -Be 'https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/RepoId/importRequests?$script:apiVersion'
         }
         It 'Invoke should be correct, Verifying body' {
             $res = '{"parameters":{"gitSource":{"url":"https://gituri.git"}}}'
             $r = Import-ADOPSRepository -Organization 'Organization' -GitSource 'https://gituri.git' -RepositoryId 'RepoId' -Project 'DummyProj'
             $r.body | Should -Be $res
         }
-        
+
         It 'if wait is defined, waits until status is "completed"' {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
@@ -117,7 +117,7 @@ Describe 'Import-ADOPSRepository' {
                         }
                         status = "queued"
                         url = "https://dev.azure.com/DummyOrg/_apis/git/repositories/11111111-1111-1111-1111-111111111111/importRequests/1"
-                    }                  
+                    }
                 } -ParameterFilter { $Method -eq 'Post' }
 
                 Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
@@ -128,12 +128,12 @@ Describe 'Import-ADOPSRepository' {
                         }
                         status = "completed"
                         url = "https://dev.azure.com/DummyOrg/_apis/git/repositories/11111111-1111-1111-1111-111111111111/importRequests/1"
-                    }  
+                    }
                 } -ParameterFilter { $Method -eq 'Get' }
             }
 
             Mock -CommandName Start-Sleep -ModuleName ADOPS -MockWith {}
-            
+
             $r = Import-ADOPSRepository -Organization 'Organization' -GitSource 'GitSource' -RepositoryId 'RepoId' -Project 'DummyProj' -Wait
             $r.status | Should -Be 'completed'
         }

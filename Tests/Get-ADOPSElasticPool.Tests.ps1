@@ -21,7 +21,7 @@ Describe "Get-ADOPSElasticPool" {
                 Type = 'int32'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Get-ADOPSElasticPool | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -90,17 +90,17 @@ Describe "Get-ADOPSElasticPool" {
 
         It 'Calls InvokeADOPSRestMethod with correct parameters when Organization is used' {
             Get-ADOPSElasticPool -Organization 'MySecondOrg'
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/elasticpools?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/elasticpools?$script:apiVersion' }
         }
 
         It 'Calls InvokeADOPSRestMethod when no parameters is used' {
             Get-ADOPSElasticPool
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools?$script:apiVersion' }
         }
 
         It 'Calls InvokeADOPSRestMethod when id is used' {
             Get-ADOPSElasticPool -PoolId 123
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/123?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/123?$script:apiVersion' }
         }
 
         It 'Can handle single elastic pool responses from API' {
@@ -123,7 +123,7 @@ Describe "Get-ADOPSElasticPool" {
                     timeToLiveMinutes    = 15
                 }
             }
-            
+
             (Get-ADOPSElasticPool -Organization 'DummyOrg' -PoolId 10).poolId | Should -Be 10
         }
     }

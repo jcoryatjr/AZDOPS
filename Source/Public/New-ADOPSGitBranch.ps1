@@ -20,7 +20,7 @@ function New-ADOPSGitBranch {
     [ValidateLength(40,40)]
     [string]$CommitId
     )
-    
+
     # If user didn't specify org, get it from saved context
     if ([string]::IsNullOrEmpty($Organization)) {
         $Organization = GetADOPSDefaultOrganization
@@ -35,7 +35,7 @@ function New-ADOPSGitBranch {
     )
     $Body = ConvertTo-Json -InputObject $Body -Compress
 
-    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/git/repositories/$RepositoryId/refs?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/$Project/_apis/git/repositories/$RepositoryId/refs?$script:apiVersion"
     $InvokeSplat = @{
         Uri = $Uri
         Method = 'Post'

@@ -21,7 +21,7 @@ Describe "Get-ADOPSNode" {
                 Type = 'int32'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Get-ADOPSNode | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -43,7 +43,7 @@ Describe "Get-ADOPSNode" {
                             agentState     = @('enabled', 'online')
                             computeId      = 0
                             computeState   = 'healthy'
-                            requestId      = ''                    
+                            requestId      = ''
                         },
                         @{
                             poolId         = 10
@@ -56,7 +56,7 @@ Describe "Get-ADOPSNode" {
                             agentState     = @('enabled', 'online')
                             computeId      = 1
                             computeState   = 'healthy'
-                            requestId      = ''                    
+                            requestId      = ''
                         }
                     )
                 }
@@ -78,12 +78,12 @@ Describe "Get-ADOPSNode" {
 
         It 'Calls InvokeADOPSRestMethod with correct parameters when Organization is used' {
             Get-ADOPSNode -Organization 'MySecondOrg' -PoolId 10
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/elasticpools/10/nodes?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/elasticpools/10/nodes?$script:apiVersion' }
         }
 
         It 'Calls InvokeADOPSRestMethod when only PoolId is used' {
             Get-ADOPSNode -PoolId 10
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/10/nodes?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/10/nodes?$script:apiVersion' }
         }
 
         It 'Can handle single node responses from API' {
@@ -99,10 +99,10 @@ Describe "Get-ADOPSNode" {
                     agentState     = @('enabled', 'online')
                     computeId      = 0
                     computeState   = 'healthy'
-                    requestId      = ''                    
+                    requestId      = ''
                 }
             }
-            
+
             (Get-ADOPSNode -Organization 'DummyOrg' -PoolId 10).name | Should -Be 'vmss-test000000'
         }
     }

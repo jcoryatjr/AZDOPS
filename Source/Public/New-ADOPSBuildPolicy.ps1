@@ -57,17 +57,17 @@ function New-ADOPSBuildPolicy {
 
     $Body = [ordered]@{
         type = [ordered]@{
-            id = "0609b952-1397-4640-95ec-e00a01b2c241" 
+            id = "0609b952-1397-4640-95ec-e00a01b2c241"
         }
         isBlocking = $true
         isEnabled = $true
         settings = $settings
-    } 
-    
+    }
+
     $Body = $Body | ConvertTo-Json -Depth 10 -Compress
-    
+
     $InvokeSplat = @{
-        Uri = "https://dev.azure.com/$Organization/$Project/_apis/policy/configurations?api-version=7.1-preview.1"
+        Uri = "https://dev.azure.com/$Organization/$Project/_apis/policy/configurations?$script:apiVersion"
         Method = 'POST'
         Body = $Body
     }

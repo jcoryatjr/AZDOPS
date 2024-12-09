@@ -18,7 +18,7 @@ function Start-ADOPSPipeline {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $AllPipelinesURI = "https://dev.azure.com/$Organization/$Project/_apis/pipelines?api-version=7.1-preview.1"
+    $AllPipelinesURI = "https://dev.azure.com/$Organization/$Project/_apis/pipelines?$script:apiVersion"
     $AllPipelines = InvokeADOPSRestMethod -Method Get -Uri $AllPipelinesURI
     $PipelineID = ($AllPipelines.value | Where-Object -Property Name -EQ $Name).id
 
@@ -29,12 +29,12 @@ function Start-ADOPSPipeline {
     if ($Branch -notmatch '^refs/.*') {
         $Branch = 'refs/heads/' + $Branch
     }
-    $URI = "https://dev.azure.com/$Organization/$Project/_apis/pipelines/$PipelineID/runs?api-version=7.1-preview.1"
+    $URI = "https://dev.azure.com/$Organization/$Project/_apis/pipelines/$PipelineID/runs?$script:apiVersion"
     $Body = '{"stagesToSkip":[],"resources":{"repositories":{"self":{"refName":"' + $Branch + '"}}},"variables":{}}'
-    
+
     $InvokeSplat = @{
-        Method       = 'Post' 
-        Uri          = $URI 
+        Method       = 'Post'
+        Uri          = $URI
         Body         = $Body
     }
 

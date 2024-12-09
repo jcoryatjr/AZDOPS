@@ -12,7 +12,7 @@ Describe 'Remove-ADOPSRepository' {
         $RepositoryID = '72199bdd-39ff-4bea-a1ce-f0058e82c18c'
 
         Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'myorg' }
-        
+
         Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {}
     }
 
@@ -34,7 +34,7 @@ Describe 'Remove-ADOPSRepository' {
                 Type = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Remove-ADOPSRepository | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -77,14 +77,14 @@ Describe 'Remove-ADOPSRepository' {
             $r = Remove-ADOPSRepository -Project 'myproj' -RepositoryID $RepositoryID
             $r.name | Should -Be 'HasNoValue'
         }
-        
+
         It 'Verifying URI' {
             Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 return $URI
             }
 
             $r = Remove-ADOPSRepository -Project 'myproj' -RepositoryID $RepositoryID
-            $r | Should -Be "https://dev.azure.com/myorg/myproj/_apis/git/repositories/${RepositoryID}?api-version=7.1-preview.1"
+            $r | Should -Be "https://dev.azure.com/myorg/myproj/_apis/git/repositories/${RepositoryID}?$script:apiVersion"
         }
 
         It 'Verifying method' {

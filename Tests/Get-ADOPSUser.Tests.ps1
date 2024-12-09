@@ -34,7 +34,7 @@ Describe 'Get-ADOPSUser' {
                 Type      = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases {
             Get-Command Get-ADOPSUser | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -89,7 +89,7 @@ Describe 'Get-ADOPSUser' {
             Get-ADOPSUser -Organization 'Organization'
             Should -Invoke GetADOPSDefaultOrganization -ModuleName ADOPS -Times 0 -Exactly
         }
-        
+
         It 'Should get organization using GetADOPSDefaultOrganization when organization parameter is not used' {
             Get-ADOPSUser
             Should -Invoke GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
@@ -116,7 +116,7 @@ Describe 'Get-ADOPSUser' {
                                 displayName    = 'John Doe'
                                 url            = 'https://vssps.dev.azure.com/DummyOrg/_apis/Graph/Users/aad.am9obiBkb2Vqb2huIGRvZWpvaG4gZG9lam9obiBkb2U'
                                 descriptor     = 'aad.am9obiBkb2Vqb2huIGRvZWpvaG4gZG9lam9obiBkb2U'
-                            
+
                             },
                             @{
                                 subjectKind    = 'user'
@@ -174,8 +174,8 @@ Describe 'Get-ADOPSUser' {
 
         It 'Calls InvokeADOPSRestMethod with the correct query params' {
             Get-ADOPSUser -Organization 'DummyOrg'
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users?api-version=7.1-preview.1' }
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users?api-version=7.1-preview.1&continuationToken=page2Token' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users?$script:apiVersion' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users?$script:apiVersion&continuationToken=page2Token' }
         }
     }
 
@@ -204,7 +204,7 @@ Describe 'Get-ADOPSUser' {
 
         It 'Calls InvokeADOPSRestMethod with the correct query params' {
             Get-ADOPSUser -Descriptor 'aad.am9obiBkb2Vqb2huIGRvZWpvaG4gZG9lam9obiBkb2U'
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users/aad.am9obiBkb2Vqb2huIGRvZWpvaG4gZG9lam9obiBkb2U?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://vssps.dev.azure.com/DummyOrg/_apis/graph/users/aad.am9obiBkb2Vqb2huIGRvZWpvaG4gZG9lam9obiBkb2U?$script:apiVersion' }
         }
     }
 

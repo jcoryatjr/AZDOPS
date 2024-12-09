@@ -59,7 +59,7 @@ Describe "Get-ADOPSPipelineTask" {
 "@
             }
 
-            Get-ADOPSPipelineTask | Should -Be 'https://dev.azure.com/myorg/_apis/distributedtask/tasks?api-version=7.1-preview.1'
+            Get-ADOPSPipelineTask | Should -Be 'https://dev.azure.com/myorg/_apis/distributedtask/tasks?$script:apiVersion'
         }
 
         it 'Because of how this endpoint behaves, output should be a hashtable' {

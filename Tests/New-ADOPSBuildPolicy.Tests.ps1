@@ -46,18 +46,18 @@ Describe 'New-ADOPSBuildPolicy' {
                 Type = 'string[]'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command New-ADOPSBuildPolicy | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
 
-    
+
     Context "Functionality" {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-                
+
                 Mock -CommandName InvokeADOPSRestMethod  -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
@@ -73,9 +73,9 @@ Describe 'New-ADOPSBuildPolicy' {
             Should -Invoke -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
         }
 
-        
+
         It 'Creates correct URI' {
-            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/policy/configurations?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/DummyProj/_apis/policy/configurations?$script:apiVersion'
             $actual = New-ADOPSBuildPolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main' -PipelineId 1 -Displayname 'dummyPolicy'
             $actual.Uri | Should -Be $required
         }
@@ -97,7 +97,7 @@ Describe 'New-ADOPSBuildPolicy' {
             $actual = New-ADOPSBuildPolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'refs/heads/main' -PipelineId 1 -Displayname 'dummyPolicy'
             $actual.Body | Should -Be $required
         }
-        
+
         It 'Verifying body, single filenamepatterns given, only branch name' {
             $required = '{"type":{"id":"0609b952-1397-4640-95ec-e00a01b2c241"},"isBlocking":true,"isEnabled":true,"settings":{"scope":[{"repositoryId":"1","refName":"refs/heads/main","matchKind":"exact"}],"buildDefinitionId":"1","queueOnSourceUpdateOnly":false,"manualQueueOnly":false,"displayName":"dummyPolicy","validDuration":"0","filenamePatterns":["/root/*"]}}'
             $actual = New-ADOPSBuildPolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main' -PipelineId 1 -Displayname 'dummyPolicy' -filenamePatterns '/root/*'
@@ -109,7 +109,7 @@ Describe 'New-ADOPSBuildPolicy' {
             $actual = New-ADOPSBuildPolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'refs/heads/main' -PipelineId 1 -Displayname 'dummyPolicy' -filenamePatterns '/root/*'
             $actual.Body | Should -Be $required
         }
-        
+
         It 'Verifying body, multiple filenamepatterns given, only branch name' {
             $required = '{"type":{"id":"0609b952-1397-4640-95ec-e00a01b2c241"},"isBlocking":true,"isEnabled":true,"settings":{"scope":[{"repositoryId":"1","refName":"refs/heads/main","matchKind":"exact"}],"buildDefinitionId":"1","queueOnSourceUpdateOnly":false,"manualQueueOnly":false,"displayName":"dummyPolicy","validDuration":"0","filenamePatterns":["/root/*","/side/*"]}}'
             $actual = New-ADOPSBuildPolicy -Project 'DummyProj' -RepositoryId 1 -Branch 'main' -PipelineId 1 -Displayname 'dummyPolicy' -filenamePatterns '/root/*','/side/*'

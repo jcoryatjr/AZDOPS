@@ -3,7 +3,7 @@ function Set-ADOPSElasticPool {
     param (
         [Parameter(Mandatory)]
         [int]$PoolId,
-        
+
         [Parameter(Mandatory)]
         $ElasticPoolObject,
 
@@ -16,7 +16,7 @@ function Set-ADOPSElasticPool {
         $Organization = GetADOPSDefaultOrganization
     }
 
-    $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/elasticpools/$PoolId`?api-version=7.1-preview.1"
+    $Uri = "https://dev.azure.com/$Organization/_apis/distributedtask/elasticpools/$PoolId`?$script:apiVersion"
 
     if ($ElasticPoolObject.GetType().Name -eq 'String') {
         $Body = $ElasticPoolObject
@@ -29,7 +29,7 @@ function Set-ADOPSElasticPool {
             throw 'Unable to convert the content of the ElasticPoolObject to json.'
         }
     }
-    
+
     $Method = 'PATCH'
     $ElasticPoolInfo = InvokeADOPSRestMethod -Uri $Uri -Method $Method -Body $Body
     Write-Output $ElasticPoolInfo

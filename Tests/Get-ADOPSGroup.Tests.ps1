@@ -11,7 +11,7 @@ Describe "Get-ADOPSGroup" {
     BeforeAll {
         Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
     }
-    
+
     Context "Parameters" {
         $TestCases = @(
             @{
@@ -25,7 +25,7 @@ Describe "Get-ADOPSGroup" {
                 Type = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Get-ADOPSGroup | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -33,19 +33,19 @@ Describe "Get-ADOPSGroup" {
 
     Context 'Uri' {
         BeforeAll {
-            Mock InvokeADOPSRestMethod -ModuleName ADOPS -MockWith { 
+            Mock InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 @{
                     Content =  @{
                         value = $URI
                     }
                     Headers = @{}
                 }
-                
+
             }
         }
 
         It 'Verifying URI, no continuationtoken' {
-            $Required = 'https://vssps.dev.azure.com/Organization/_apis/graph/groups?api-version=7.1-preview.1'
+            $Required = 'https://vssps.dev.azure.com/Organization/_apis/graph/groups?$script:apiVersion'
             $Actual = Get-ADOPSGroup -Organization 'Organization'
             $Actual.OriginalString | Should -Be $Required
         }
@@ -60,7 +60,7 @@ Describe "Get-ADOPSGroup" {
 
     Context 'Organization' {
         BeforeAll {
-            Mock InvokeADOPSRestMethod -ModuleName ADOPS -MockWith { 
+            Mock InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 @{
                     Content    = @{
                         value = @(
@@ -102,7 +102,7 @@ Describe "Get-ADOPSGroup" {
             Get-ADOPSGroup -Organization 'Organization'
             Should -Invoke GetADOPSDefaultOrganization -ModuleName ADOPS -Times 0 -Exactly
         }
-        
+
         It 'Should get organization using GetADOPSDefaultOrganization when organization parameter is not used' {
             Get-ADOPSGroup
             Should -Invoke GetADOPSDefaultOrganization -ModuleName ADOPS -Times 1 -Exactly
@@ -113,7 +113,7 @@ Describe "Get-ADOPSGroup" {
         BeforeAll {
             Mock InvokeADOPSRestMethod -ModuleName ADOPS -ParameterFilter {
                 $Uri -notlike '*continuationToken*'
-            } { 
+            } {
                 [PSCustomObject]@{
                     Content    = @{
                         value = @(
@@ -179,7 +179,7 @@ Describe "Get-ADOPSGroup" {
             }
             Mock InvokeADOPSRestMethod -ModuleName ADOPS -ParameterFilter {
                 $Uri -like '*continuationToken=page2Token*'
-            } { 
+            } {
                 [PSCustomObject]@{
                     Content    = @{
                         value = @(
@@ -225,7 +225,7 @@ Describe "Get-ADOPSGroup" {
 
         It 'Calls InvokeADOPSRestMethod with the correct query params' {
             Get-ADOPSGroup -Organization 'DummyOrg'
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq "https://vssps.dev.azure.com/DummyOrg/_apis/graph/groups?api-version=7.1-preview.1" }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq "https://vssps.dev.azure.com/DummyOrg/_apis/graph/groups?$script:apiVersion" }
             Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq "https://vssps.dev.azure.com/DummyOrg/_apis/graph/groups?continuationToken=page2Token&api-version=7.1-preview.1" }
         }
     }

@@ -21,11 +21,11 @@ Describe "Set-ADOPSElasticPool" {
                 Type = 'int'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command Set-ADOPSElasticpool | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
-        
+
         # Since this parameter accepts multiple types we create a separate test for it.
         It 'Should have parameter ElasticPoolObject'  {
             Get-Command Set-ADOPSElasticpool | Should -HaveParameter 'ElasticPoolObject' -Mandatory
@@ -36,7 +36,7 @@ Describe "Set-ADOPSElasticPool" {
         BeforeAll {
             Mock InvokeADOPSRestMethod -ModuleName ADOPS {
                 [PSCustomObject]@{
-                    elasticPool =                                                                                                             
+                    elasticPool =
                     @{
                         poolId               = 59
                         serviceEndpointId    = '44868479-e856-42bf-9a2b-74bb500d8e36'
@@ -56,7 +56,7 @@ Describe "Set-ADOPSElasticPool" {
                     }
                 }
             }
-            
+
             Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
 
             $ElasticPoolObject = '{
@@ -100,7 +100,7 @@ Describe "Set-ADOPSElasticPool" {
             Mock -CommandName InvokeADOPSRestMethod -ModuleName ADOPS -MockWith {
                 return $URI
             }
-            $required = 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/59?api-version=7.1-preview.1'
+            $required = 'https://dev.azure.com/DummyOrg/_apis/distributedtask/elasticpools/59?$script:apiVersion'
             $actual = Set-ADOPSElasticpool -PoolId 59 -ElasticPoolObject $ElasticPoolObject -Organization 'DummyOrg'
             $actual | Should -Be $required
         }
@@ -115,13 +115,13 @@ Describe "Set-ADOPSElasticPool" {
             {$actual | ConvertFrom-Json} | Should -Not -Throw
         }
 
-        
+
         It 'If ElasticPoolObject is an object that cant be converted to Json, it should throw' {
             Mock -CommandName ConvertTo-Json -ModuleName ADOPS -MockWith {
                 throw
             }
 
-            $ElasticPoolObject = $ElasticPoolObject | ConvertFrom-Json            
+            $ElasticPoolObject = $ElasticPoolObject | ConvertFrom-Json
             {Set-ADOPSElasticpool -PoolId 59 -ElasticPoolObject $ElasticPoolObject -Organization 'DummyOrg'} | Should -Throw
         }
     }

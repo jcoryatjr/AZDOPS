@@ -31,7 +31,7 @@ Describe 'Get-ADOPSPool' {
                 Type      = 'switch'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases {
             Get-Command Get-ADOPSPool | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
@@ -114,12 +114,12 @@ Describe 'Get-ADOPSPool' {
 
         It 'Calls InvokeADOPSRestMethod with correct parameters when Organization is used' {
             Get-ADOPSPool -Organization 'MySecondOrg' -PoolId 10
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/pools/10?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/MySecondOrg/_apis/distributedtask/pools/10?$script:apiVersion' }
         }
 
         It 'Calls InvokeADOPSRestMethod when only PoolId is used' {
             Get-ADOPSPool -PoolId 10
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/pools/10?api-version=7.1-preview.1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/_apis/distributedtask/pools/10?$script:apiVersion' }
         }
 
         It 'Calls InvokeADOPSRestMethod when only PoolName is used' {
@@ -146,7 +146,7 @@ Describe 'Get-ADOPSPool' {
                     options       = 'none'
                 }
             }
-            
+
             (Get-ADOPSPool -Organization 'DummyOrg' -PoolId 8).name | Should -Be 'Hosted Ubuntu 1604'
         }
     }

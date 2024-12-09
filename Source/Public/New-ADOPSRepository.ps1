@@ -20,7 +20,7 @@ function New-ADOPSRepository {
 
     $ProjectID = (Get-ADOPSProject -Name $Project -Organization $Organization).id
 
-    $URI = "https://dev.azure.com/$Organization/_apis/git/repositories?api-version=7.1-preview.1"
+    $URI = "https://dev.azure.com/$Organization/_apis/git/repositories?$script:apiVersion"
     $Body = "{""name"":""$Name"",""project"":{""id"":""$ProjectID""}}"
 
     $InvokeSplat = @{
@@ -28,6 +28,6 @@ function New-ADOPSRepository {
         Method       = 'Post'
         Body         = $Body
     }
-    
+
     InvokeADOPSRestMethod @InvokeSplat
 }

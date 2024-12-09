@@ -36,18 +36,18 @@ Describe 'New-ADOPSGitBranch' {
                 Type = 'string'
             }
         )
-    
+
         It 'Should have parameter <_.Name>' -TestCases $TestCases  {
             Get-Command New-ADOPSGitBranch | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
 
-    
+
     Context "Functionality" {
         BeforeAll {
             InModuleScope -ModuleName ADOPS {
                 Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
-                
+
                 Mock -CommandName InvokeADOPSRestMethod  -ModuleName ADOPS -MockWith {
                     return $InvokeSplat
                 }
@@ -64,7 +64,7 @@ Describe 'New-ADOPSGitBranch' {
         }
 
         It 'Creates correct URI' {
-            $required = "https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/refs?api-version=7.1-preview.1"
+            $required = "https://dev.azure.com/DummyOrg/DummyProj/_apis/git/repositories/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/refs?$script:apiVersion"
             $actual = New-ADOPSGitBranch -Project 'DummyProj' -RepositoryId 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' -BranchName 'myNewBranch' -CommitId 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
             $actual.Uri | Should -Be $required
         }

@@ -55,17 +55,17 @@ function New-ADOPSMergePolicy {
 
     $Body = [ordered]@{
         type = [ordered]@{
-            id = "fa4e907d-c16b-4a4c-9dfa-4916e5d171ab" 
+            id = "fa4e907d-c16b-4a4c-9dfa-4916e5d171ab"
         }
         isBlocking = $true
         isEnabled = $true
         settings = $settings
-    } 
-    
+    }
+
     $Body = $Body | ConvertTo-Json -Depth 10 -Compress
-    
+
     $InvokeSplat = @{
-        Uri = "https://dev.azure.com/$Organization/$Project/_apis/policy/configurations?api-version=7.1-preview.1"
+        Uri = "https://dev.azure.com/$Organization/$Project/_apis/policy/configurations?$script:apiVersion"
         Method = 'POST'
         Body = $Body
     }

@@ -36,7 +36,7 @@ Describe 'Get-ADOPSPipeline' {
             Get-Command Get-ADOPSPipeline | Should -HaveParameter $_.Name -Mandatory:$_.Mandatory -Type $_.Type
         }
     }
-    
+
     Context 'Getting Pipeline' {
         BeforeAll {
             $OrganizationName = 'DummyOrg'
@@ -97,18 +97,18 @@ Describe 'Get-ADOPSPipeline' {
 
             Mock -CommandName GetADOPSDefaultOrganization -ModuleName ADOPS -MockWith { 'DummyOrg' }
         }
-        
+
         It 'uses InvokeADOPSRestMethod two times' {
             Get-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName
             Should -Invoke 'InvokeADOPSRestMethod' -ModuleName 'ADOPS' -Exactly -Times 2
         }
         It 'Calls InvokeADOPSRestMethod when revision is from pipeline lookup' {
             Get-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines/10?api-version=7.1-preview.1&pipelineVersion=1' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines/10?$script:apiVersion&pipelineVersion=1' }
         }
         It 'Calls InvokeADOPSRestMethod when revision is from input' {
             Get-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName -Revision 2
-            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines/10?api-version=7.1-preview.1&pipelineVersion=2' }
+            Should -Invoke InvokeADOPSRestMethod -ModuleName ADOPS -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://dev.azure.com/DummyOrg/DummyProject/_apis/pipelines/10?$script:apiVersion&pipelineVersion=2' }
         }
         It 'returns output after getting pipeline' {
             Get-ADOPSPipeline -Organization $OrganizationName -Project $Project -Name $PipeName | Should -BeOfType [pscustomobject] -Because 'InvokeADOPSRestMethod should convert the json to pscustomobject'
